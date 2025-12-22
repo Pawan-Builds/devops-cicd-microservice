@@ -1,12 +1,13 @@
 from flask import Flask, render_template_string
 import datetime
+import os
 
 app = Flask(__name__)
 
 @app.route("/")
 def display_dashboard():
-    # Current deployment info
-    deployment_count = 42  # Simulated deployment count
+    # Deployment information
+    deployment_count = 42  # Simulated
     current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     html_template = """
@@ -15,7 +16,7 @@ def display_dashboard():
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>DevOps CI/CD Pipeline Dashboard</title>
+        <title>DevOps CI/CD Microservice Dashboard</title>
         <style>
             * {
                 margin: 0;
@@ -217,6 +218,29 @@ def display_dashboard():
                 overflow-x: auto;
                 margin: 15px 0;
                 border: 1px solid #334155;
+                font-size: 0.9rem;
+            }
+            
+            .file-tree {
+                font-family: 'Courier New', monospace;
+                line-height: 1.6;
+                background: #1e293b;
+                padding: 20px;
+                border-radius: 10px;
+                border: 1px solid #334155;
+                margin: 15px 0;
+            }
+            
+            .tree-folder {
+                color: #60a5fa;
+            }
+            
+            .tree-file {
+                color: #fbbf24;
+            }
+            
+            .tree-indent {
+                margin-left: 20px;
             }
             
             .deployment-time {
@@ -247,7 +271,7 @@ def display_dashboard():
     <body>
         <div class="container">
             <header>
-                <h1>🚀 DevOps CI/CD Pipeline</h1>
+                <h1>🚀 DevOps CI/CD Microservice</h1>
                 <p class="tagline">End-to-End Automation from Code to Kubernetes</p>
                 <div class="status-badge">✅ Pipeline Status: ACTIVE</div>
             </header>
@@ -262,8 +286,8 @@ def display_dashboard():
                     <div class="stat-label">Pipeline Stages</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-value">99.8%</div>
-                    <div class="stat-label">Uptime</div>
+                    <div class="stat-value">6</div>
+                    <div class="stat-label">Technologies</div>
                 </div>
             </div>
             
@@ -272,22 +296,22 @@ def display_dashboard():
                 <div class="stage">
                     <div class="stage-number">1</div>
                     <div class="stage-name">📦 Code Commit</div>
-                    <div style="font-size: 0.8rem; color: #94a3b8;">GitHub Push</div>
+                    <div style="font-size: 0.8rem; color: #94a3b8;">Push to GitHub</div>
                 </div>
                 <div class="stage">
                     <div class="stage-number">2</div>
-                    <div class="stage-name">⚙️ Build</div>
-                    <div style="font-size: 0.8rem; color: #94a3b8;">Docker Image</div>
+                    <div class="stage-name">⚙️ Build & Test</div>
+                    <div style="font-size: 0.8rem; color: #94a3b8;">GitHub Actions</div>
                 </div>
                 <div class="stage">
                     <div class="stage-number">3</div>
-                    <div class="stage-name">🧪 Test</div>
-                    <div style="font-size: 0.8rem; color: #94a3b8;">Automated Tests</div>
+                    <div class="stage-name">🐳 Containerize</div>
+                    <div style="font-size: 0.8rem; color: #94a3b8;">Docker Image</div>
                 </div>
                 <div class="stage">
                     <div class="stage-number">4</div>
-                    <div class="stage-name">🐳 Deploy</div>
-                    <div style="font-size: 0.8rem; color: #94a3b8;">Kubernetes</div>
+                    <div class="stage-name">🚀 Deploy</div>
+                    <div style="font-size: 0.8rem; color: #94a3b8;">Helm to K8s</div>
                 </div>
                 <div class="stage">
                     <div class="stage-number">5</div>
@@ -297,6 +321,51 @@ def display_dashboard():
             </div>
             
             <div class="dashboard-grid">
+                <div class="card">
+                    <h2>📁 Project Structure</h2>
+                    <div class="file-tree">
+                        <div class="tree-folder">devops-cicd-microservice/</div>
+                        <div class="tree-indent">
+                            <div class="tree-folder">app/</div>
+                            <div class="tree-indent">
+                                <div class="tree-file">app.py</div>
+                                <div class="tree-file">requirements.txt</div>
+                                <div class="tree-file">Dockerfile</div>
+                            </div>
+                            <div class="tree-folder">helm/</div>
+                            <div class="tree-indent">
+                                <div class="tree-folder">microservice/</div>
+                                <div class="tree-indent">
+                                    <div class="tree-file">Chart.yaml</div>
+                                    <div class="tree-file">values.yaml</div>
+                                    <div class="tree-folder">templates/</div>
+                                    <div class="tree-indent">
+                                        <div class="tree-file">deployment.yaml</div>
+                                        <div class="tree-file">service.yaml</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tree-folder">k8s/</div>
+                            <div class="tree-indent">
+                                <div class="tree-file">namespace.yaml</div>
+                            </div>
+                            <div class="tree-folder">.github/</div>
+                            <div class="tree-indent">
+                                <div class="tree-folder">workflows/</div>
+                                <div class="tree-indent">
+                                    <div class="tree-file">ci-cd.yaml</div>
+                                </div>
+                            </div>
+                            <div class="tree-folder">scripts/</div>
+                            <div class="tree-indent">
+                                <div class="tree-file">local-deploy.sh</div>
+                            </div>
+                            <div class="tree-file">README.md</div>
+                            <div class="tree-file">interviewer-explanation.md</div>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="card">
                     <h2>🏗️ Architecture</h2>
                     <p>This project demonstrates a complete CI/CD pipeline that builds, containerizes, and deploys a microservice application to Kubernetes using:</p>
@@ -308,21 +377,18 @@ def display_dashboard():
                         <div class="tech-item">Python Flask</div>
                         <div class="tech-item">GitHub Container Registry</div>
                     </div>
-                </div>
-                
-                <div class="card">
-                    <h2>📋 Workflow</h2>
-                    <ol style="padding-left: 20px; line-height: 2;">
+                    
+                    <h3 style="margin-top: 20px; color: #94a3b8;">Workflow</h3>
+                    <ol style="padding-left: 20px; margin-top: 10px; line-height: 1.8;">
                         <li>Developer pushes code to GitHub</li>
                         <li>GitHub Actions builds Docker image</li>
                         <li>Image is pushed to GitHub Container Registry</li>
                         <li>Application is deployed to Kubernetes using Helm</li>
-                        <li>Automated health checks verify deployment</li>
                     </ol>
                 </div>
                 
                 <div class="card">
-                    <h2>🔧 Tech Stack</h2>
+                    <h2>🔧 Tech Stack Details</h2>
                     <div class="tech-stack">
                         <div class="tech-item" style="background: rgba(239, 68, 68, 0.1); border-color: #ef4444;">CI/CD: GitHub Actions</div>
                         <div class="tech-item" style="background: rgba(59, 130, 246, 0.1); border-color: #3b82f6;">Container: Docker</div>
@@ -331,6 +397,14 @@ def display_dashboard():
                         <div class="tech-item" style="background: rgba(245, 158, 11, 0.1); border-color: #f59e0b;">Backend: Python Flask</div>
                         <div class="tech-item" style="background: rgba(236, 72, 153, 0.1); border-color: #ec4899;">Registry: GHCR</div>
                     </div>
+                    
+                    <h3 style="margin-top: 20px; color: #94a3b8;">Key Files</h3>
+                    <ul style="padding-left: 20px; margin-top: 10px; line-height: 1.8;">
+                        <li><code>.github/workflows/ci-cd.yaml</code> - CI/CD pipeline</li>
+                        <li><code>helm/microservice/</code> - Helm charts</li>
+                        <li><code>scripts/local-deploy.sh</code> - Local deployment</li>
+                        <li><code>k8s/namespace.yaml</code> - K8s namespace</li>
+                    </ul>
                 </div>
             </div>
             
@@ -345,19 +419,30 @@ minikube start
 # Access the application
 minikube service flask-app-service</code></pre>
                 
-                <h3 style="margin-top: 25px;">📁 Project Structure</h3>
-                <pre><code>├── app.py              # Flask application (this file)
-├── Dockerfile          # Container definition
-├── helm/              # Helm charts
-├── .github/workflows/ # CI/CD pipelines
-├── scripts/           # Deployment scripts
-├── requirements.txt   # Python dependencies
-└── README.md          # Project documentation</code></pre>
+                <h3 style="margin-top: 25px;">📋 Interviewer Explanation</h3>
+                <p>This project demonstrates key DevOps concepts:</p>
+                <ul style="margin-left: 20px; line-height: 1.8; margin-top: 10px;">
+                    <li><strong>CI/CD Automation</strong>: Fully automated pipeline from code to deployment</li>
+                    <li><strong>Container Lifecycle Management</strong>: Docker build, push, and deploy</li>
+                    <strong>Kubernetes Deployments</strong>: Helm-based deployment to K8s</li>
+                    <li><strong>Helm Templating</strong>: Configuration management and templating</li>
+                    <li><strong>GitHub Actions</strong>: Pipeline as code with workflow files</li>
+                </ul>
+                
+                <div style="background: rgba(245, 158, 11, 0.1); padding: 15px; border-radius: 8px; margin-top: 20px; border-left: 4px solid #f59e0b;">
+                    <strong>🔥 Interview Talking Points:</strong>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>How the pipeline handles rollbacks on failure</li>
+                        <li>Managing image tags and versioning</li>
+                        <li>Kubernetes service exposure strategies</li>
+                        <li>Helm value overrides for different environments</li>
+                    </ul>
+                </div>
             </div>
             
             <div class="deployment-time">
-                Last Deployment: {{ current_time }} UTC<br>
-                Service Version: 1.0.0 | Environment: Production
+                Dashboard loaded: {{ current_time }} UTC<br>
+                Service Version: 1.0.0 | Environment: Production | Pod: flask-app-{{ deployment_count }}
             </div>
         </div>
     </body>
@@ -370,7 +455,17 @@ minikube service flask-app-service</code></pre>
 
 @app.route("/health")
 def health_check():
-    return {"status": "healthy", "service": "devops-pipeline", "timestamp": datetime.datetime.now().isoformat()}
+    return {
+        "status": "healthy", 
+        "service": "devops-cicd-microservice", 
+        "version": "1.0.0",
+        "timestamp": datetime.datetime.now().isoformat(),
+        "checks": {
+            "database": "connected",
+            "cache": "healthy",
+            "disk_space": "adequate"
+        }
+    }
 
 @app.route("/api/deployments")
 def get_deployments():
@@ -378,7 +473,25 @@ def get_deployments():
         "total_deployments": 42,
         "last_7_days": [5, 3, 7, 2, 6, 4, 8],
         "success_rate": "99.2%",
-        "average_deployment_time": "45s"
+        "average_deployment_time": "45s",
+        "pipeline": {
+            "build_time": "1m 30s",
+            "test_time": "45s",
+            "deploy_time": "2m 15s"
+        }
+    }
+
+@app.route("/api/pipeline")
+def pipeline_info():
+    return {
+        "stages": [
+            {"name": "Code Commit", "description": "Push to GitHub"},
+            {"name": "Build & Test", "description": "GitHub Actions CI"},
+            {"name": "Containerize", "description": "Docker Image Build"},
+            {"name": "Deploy", "description": "Helm to Kubernetes"},
+            {"name": "Monitor", "description": "Health Checks & Logging"}
+        ],
+        "tools": ["GitHub Actions", "Docker", "Kubernetes", "Helm", "Python Flask"]
     }
 
 if __name__ == "__main__":
