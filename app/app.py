@@ -418,27 +418,6 @@ minikube start
 
 # Access the application
 minikube service flask-app-service</code></pre>
-                
-                <h3 style="margin-top: 25px;">📋 Interviewer Explanation</h3>
-                <p>This project demonstrates key DevOps concepts:</p>
-                <ul style="margin-left: 20px; line-height: 1.8; margin-top: 10px;">
-                    <li><strong>CI/CD Automation</strong>: Fully automated pipeline from code to deployment</li>
-                    <li><strong>Container Lifecycle Management</strong>: Docker build, push, and deploy</li>
-                    <strong>Kubernetes Deployments</strong>: Helm-based deployment to K8s</li>
-                    <li><strong>Helm Templating</strong>: Configuration management and templating</li>
-                    <li><strong>GitHub Actions</strong>: Pipeline as code with workflow files</li>
-                </ul>
-                
-                <div style="background: rgba(245, 158, 11, 0.1); padding: 15px; border-radius: 8px; margin-top: 20px; border-left: 4px solid #f59e0b;">
-                    <strong>🔥 Interview Talking Points:</strong>
-                    <ul style="margin-left: 20px; margin-top: 10px;">
-                        <li>How the pipeline handles rollbacks on failure</li>
-                        <li>Managing image tags and versioning</li>
-                        <li>Kubernetes service exposure strategies</li>
-                        <li>Helm value overrides for different environments</li>
-                    </ul>
-                </div>
-            </div>
             
             <div class="deployment-time">
                 Dashboard loaded: {{ current_time }} UTC<br>
