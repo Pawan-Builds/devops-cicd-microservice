@@ -433,16 +433,8 @@ minikube service flask-app-service</code></pre>
                                  current_time=current_time)
 
 @app.route("/health")
-def health_check():
-    return {
-        "status": "healthy", 
-        "service": "devops-cicd-microservice", 
-        "version": "1.0.0",
-        "timestamp": datetime.datetime.now().isoformat(),
-        "checks": {
-            "database": "connected",
-            "cache": "healthy",
-            "disk_space": "adequate"
+def health():
+    return {"status": "ok"}, 200
         }
     }
 
