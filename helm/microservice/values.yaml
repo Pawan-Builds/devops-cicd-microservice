@@ -1,8 +1,8 @@
 replicaCount: 2
 
 image:
-  repository: ghcr.io/Pawan-Builds/devops-cicd-microservice
-  tag: latest
+  repository: ghcr.io/pawan-builds/devops-cicd-microservice
+  tag: ""
 
 service:
   type: NodePort
