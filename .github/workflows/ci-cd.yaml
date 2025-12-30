@@ -248,4 +248,3 @@ jobs:
           echo "  minikube start"
           echo "  ./scripts/local-deploy.sh"
           echo "  minikube service microservice -n devops-demo"
-EOF
