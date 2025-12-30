@@ -124,11 +124,11 @@ It demonstrates:
 
 ## 🖼️ Application Output
 
-<img width="1879" height="911" alt="Screenshot 2025-12-23 205722" src="https://github.com/user-attachments/assets/ce2c3fb4-251b-4850-82e1-4e93c79bbfee" />
+<img width="1879" height="911" alt="Screenshot 2025-12-23 205722" src="https://github.com/user-attachments/assets/168c70b4-c012-4cc8-99e3-2dc39be4aecf" />
 
-<img width="1879" height="952" alt="Screenshot 2025-12-23 205745" src="https://github.com/user-attachments/assets/1f37da35-2fb7-4311-b7cc-f75bf3b72aaa" />
+<img width="1879" height="952" alt="Screenshot 2025-12-23 205745" src="https://github.com/user-attachments/assets/fc3c6e87-4255-4f99-a20d-9b85016edfa7" />
 
-<img width="1879" height="611" alt="Screenshot 2025-12-23 205801" src="https://github.com/user-attachments/assets/44dd38ff-db51-4e73-8317-0d0d44b8e4af" />
+<img width="1879" height="611" alt="Screenshot 2025-12-23 205801" src="https://github.com/user-attachments/assets/6cb4a2ad-dc7c-4f6a-b7fa-c75a063524a4" />
 
 ---
 
