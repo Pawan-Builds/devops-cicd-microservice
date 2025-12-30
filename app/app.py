@@ -435,8 +435,6 @@ minikube service flask-app-service</code></pre>
 @app.route("/health")
 def health():
     return {"status": "ok"}, 200
-        }
-    }
 
 @app.route("/api/deployments")
 def get_deployments():
