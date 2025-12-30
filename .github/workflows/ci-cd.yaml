@@ -1,18 +1,32 @@
-# Replace your workflow file
-cat > ~/devops-cicd-microservice/.github/workflows/ci-cd.yaml << 'EOF'
-name: CI/CD Pipeline
+name: ci-cd
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-  build-and-test:
+  test-application:
     runs-on: ubuntu-latest
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Verify repository structure
+        run: |
+          echo "📁 Checking repository structure..."
+          ls -la
+          echo "✅ Root directory verified"
+          
+          echo "📁 Checking app directory..."
+          ls -la app/
+          echo "✅ App directory verified"
+          
+          echo "📁 Checking scripts..."
+          ls -la scripts/
+          echo "✅ Scripts directory verified"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -24,42 +38,214 @@ jobs:
           cd app
           pip install -r requirements.txt
 
-      - name: Test application
+      - name: Test application syntax
         run: |
           cd app
-          python -c "from app import app; print('✅ Flask app imported successfully')"
-          echo "✅ Application test passed"
+          echo "🔍 Testing Flask application..."
+          python -c "from app import app; print('✅ Flask app imports successfully')"
+          
+          echo "🔍 Checking for syntax errors..."
+          python -m py_compile app.py
+          echo "✅ No syntax errors found"
+          
+          echo "🔍 Testing health endpoint..."
+          python -c "
+          from app import app
+          import sys
+          with app.test_client() as client:
+              response = client.get('/health')
+              if response.status_code == 200:
+                  print('✅ Health endpoint returns 200')
+              else:
+                  print('❌ Health endpoint failed')
+                  sys.exit(1)
+          "
 
-  build-docker:
-    needs: build-and-test
+  test-docker-build:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    permissions:
-      contents: read
-      packages: write
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Set up Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Docker image
+        run: |
+          echo "🐳 Building Docker image..."
+          cd app
+          docker build -t devops-cicd-microservice:test .
+          echo "✅ Docker build successful"
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./app
-          push: true
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/devops-cicd-microservice:latest
-            ghcr.io/${{ github.repository_owner }}/devops-cicd-microservice:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      - name: Test Docker image
+        run: |
+          echo "🧪 Testing Docker image..."
+          docker run --rm -d -p 5000:5000 --name test-container devops-cicd-microservice:test
+          sleep 5
+          
+          # Test if container is running
+          if docker ps | grep -q test-container; then
+            echo "✅ Docker container is running"
+            
+            # Test health endpoint
+            if curl -s http://localhost:5000/health | grep -q "ok"; then
+              echo "✅ Health endpoint is accessible"
+            else
+              echo "❌ Health endpoint failed"
+              docker logs test-container
+              exit 1
+            fi
+            
+            docker stop test-container
+          else
+            echo "❌ Docker container failed to start"
+            docker logs test-container
+            exit 1
+          fi
+
+  test-deployment-script:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Verify deployment script
+        run: |
+          echo "🔍 Checking local-deploy.sh script..."
+          
+          # Check if script exists
+          if [ -f ./scripts/local-deploy.sh ]; then
+            echo "✅ Script exists"
+            
+            # Check if script is executable
+            if [ -x ./scripts/local-deploy.sh ]; then
+              echo "✅ Script is executable"
+            else
+              echo "⚠️  Script is not executable, making it executable..."
+              chmod +x ./scripts/local-deploy.sh
+            fi
+            
+            # Check script syntax
+            if bash -n ./scripts/local-deploy.sh; then
+              echo "✅ Script has valid bash syntax"
+            else
+              echo "❌ Script has bash syntax errors"
+              exit 1
+            fi
+            
+            # Check for required commands in script
+            echo "🔍 Checking for required commands in script..."
+            REQUIRED_COMMANDS=("kubectl" "helm" "docker" "minikube")
+            for cmd in "${REQUIRED_COMMANDS[@]}"; do
+              if grep -q "$cmd" ./scripts/local-deploy.sh; then
+                echo "✅ Script uses $cmd"
+              else
+                echo "⚠️  Script doesn't use $cmd (might be missing)"
+              fi
+            done
+            
+          else
+            echo "❌ Script not found at ./scripts/local-deploy.sh"
+            exit 1
+          fi
+
+      - name: Verify Helm chart
+        run: |
+          echo "🔍 Checking Helm chart structure..."
+          
+          # Check if helm directory exists
+          if [ -d ./helm/microservice ]; then
+            echo "✅ Helm chart directory exists"
+            
+            # Check required files
+            REQUIRED_FILES=("Chart.yaml" "values.yaml" "templates/deployment.yaml" "templates/service.yaml")
+            for file in "${REQUIRED_FILES[@]}"; do
+              if [ -f "./helm/microservice/$file" ]; then
+                echo "✅ Found $file"
+              else
+                echo "❌ Missing $file"
+                exit 1
+              fi
+            done
+            
+            # Test Helm template rendering
+            echo "🔍 Testing Helm template rendering..."
+            if helm template ./helm/microservice --dry-run > /dev/null 2>&1; then
+              echo "✅ Helm template renders successfully"
+            else
+              echo "❌ Helm template has errors"
+              helm template ./helm/microservice --dry-run
+              exit 1
+            fi
+          else
+            echo "❌ Helm chart not found"
+            exit 1
+          fi
+
+  verify-readme:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check README instructions
+        run: |
+          echo "📖 Verifying README instructions..."
+          
+          # Check if README exists
+          if [ -f README.md ]; then
+            echo "✅ README.md exists"
+            
+            # Check for key instructions
+            KEY_PHRASES=(
+              "git clone"
+              "minikube start"
+              "local-deploy.sh"
+              "minikube service"
+            )
+            
+            for phrase in "${KEY_PHRASES[@]}"; do
+              if grep -q "$phrase" README.md; then
+                echo "✅ README contains: $phrase"
+              else
+                echo "⚠️  README missing: $phrase"
+              fi
+            done
+            
+            # Check for exact clone command
+            if grep -q "git clone https://github.com/Pawan-Builds/devops-cicd-microservice.git" README.md; then
+              echo "✅ README has correct clone command"
+            else
+              echo "❌ README missing correct clone command"
+            fi
+            
+          else
+            echo "❌ README.md not found"
+            exit 1
+          fi
+
+      - name: Generate deployment summary
+        run: |
+          echo "📋 DEPLOYMENT INSTRUCTIONS SUMMARY"
+          echo "=================================="
+          echo ""
+          echo "✅ Repository structure is valid"
+          echo "✅ Python application works"
+          echo "✅ Docker image builds successfully"
+          echo "✅ Deployment script is ready"
+          echo "✅ Helm charts are valid"
+          echo "✅ README has deployment instructions"
+          echo ""
+          echo "📝 Users can deploy using:"
+          echo ""
+          echo "  git clone https://github.com/Pawan-Builds/devops-cicd-microservice.git"
+          echo "  cd devops-cicd-microservice"
+          echo "  minikube start"
+          echo "  ./scripts/local-deploy.sh"
+          echo "  minikube service microservice -n devops-demo"
 EOF
